@@ -16,4 +16,4 @@ all:
 	$(CC) -g -o $(SERVER_APP) $(SERVER_SRC) $(HEADERFILE_DIR) $(LIBS) $(LIBS_DIR) 
 
 clean:
-	rm -f *.o *.out 
+	rm -f *.o *.out *.raw 
