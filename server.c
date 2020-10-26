@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <assert.h>
 #include "md5.h"
-#include <time.h>
 
 int main (void)
 {
@@ -17,7 +16,8 @@ int main (void)
 
     FILE *fp=NULL;
     unsigned char buffer[640*480*2];
-    fp=fopen("ir_640_480.raw","rb+");
+    //fp=fopen("ir_640_480.raw","rb+");
+    fp=fopen("ir_640_480.stream","rb+");
     if(fp==NULL){
             printf("cannot open this file\n");
             return -1;
@@ -42,6 +42,17 @@ int main (void)
 	Compute_string_md5(buffer, 640*480*2, md5_str);
 	zmq_send (responder,(unsigned char*)md5_str,sizeof(md5_str),0);
 	printf ("Send md5sun:%s\n",md5_str);
+        if(feof(fp) == 0){
+           if (fread(buffer, 1, 640*480*2, fp) != 640*480*2){
+                // Loop
+                printf("re fread!!!\n");
+                fseek(fp, 0, SEEK_SET);
+                fread(buffer, 1, 640*480*2, fp);
+           }   
+        }else{
+                fseek(fp, 0, SEEK_SET);
+                printf("fread to de end ofir_640_480.stream\n");
+        }             
     }
     return 0;
 }

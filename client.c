@@ -27,8 +27,10 @@ int main (void)
 
 #define WRITE_FILE 0
 #if  WRITE_FILE
+const char *filename = "rec_ir.raw";
+//const char *filename = "rec_ir.stream";
     FILE *fp=NULL;
-    fp=fopen("rec_ir.raw","wb+");
+    fp=fopen(filename,"wb+");
     if(fp==NULL){
             printf("cannot open this file\n");
             return -1;
@@ -50,7 +52,7 @@ int main (void)
         DEBUG ("Received raw data from server\n");
 #if  WRITE_FILE
         fwrite(buffer,1,640*480*2,fp);
-       printf ("Write raw data to rec_ir.raw file\n");
+        DEBUG ("Write raw data to rec_ir.raw file\n");
 #endif
         zmq_send (requester, "md5sum", 6, 0);
         DEBUG ("Send md5sun request\n");
