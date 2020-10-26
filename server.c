@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <assert.h>
+#include "md5.h"
 
 int main (void)
 {
@@ -22,7 +23,7 @@ int main (void)
     }
     if (fread(buffer, 1, 640*480*2, fp) != 640*480*2){
           // Loop
-            printf("re fread!!!\n");
+           printf("re fread!!!\n");
            fseek(fp, 0, SEEK_SET);
            fread(buffer, 1, 640*480*2, fp);
     }
@@ -31,8 +32,15 @@ int main (void)
         char rec_buffer [10];
         zmq_recv (responder, rec_buffer, 10, 0);
         printf ("Received Hello\n");
-        sleep (1);          //  Do some 'work'
+//        sleep (1);          //  Do some 'work'
         zmq_send (responder, buffer, 640*480*2, 0);
+	printf ("Send raw frame data \n");
+	zmq_recv (responder, rec_buffer, 10, 0);
+	printf ("Received md5 requect\n");
+	char md5_str[MD5_STR_LEN + 1];
+	Compute_string_md5(buffer, 640*480*2, md5_str);
+	zmq_send (responder,(unsigned char*)md5_str,sizeof(md5_str),0);
+	printf ("Send md5sun:%s\n",md5_str);
     }
     return 0;
 }

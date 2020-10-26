@@ -7,8 +7,8 @@ CFLAGS = -g
 LIBS = -lzmq -lczmq 
 LIBS_DIR = -L/usr/lib/x86_64-linux-gnu
 HEADERFILE_DIR = -I/usr/include
-CLIENT_SRC = client.c
-SERVER_SRC = server.c
+CLIENT_SRC = client.c md5.c
+SERVER_SRC = server.c md5.c
 
 #all:  $(OBJS)
 all:
@@ -16,4 +16,5 @@ all:
 	$(CC) -g -o $(SERVER_APP) $(SERVER_SRC) $(HEADERFILE_DIR) $(LIBS) $(LIBS_DIR) 
 
 clean:
-	rm -f *.o *.out *.raw 
+	rm -f *.o *.out 
+
