@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include "md5.h"
+#include <time.h>
 
 int main (void)
 {
