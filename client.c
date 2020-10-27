@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include "md5.h"
 #include <time.h>
+#include <OrbStreamNtp.h>
 
 //#define __DEBUG
 #ifdef __DEBUG
@@ -18,12 +19,11 @@ int main (void)
     char md5_str[MD5_STR_LEN + 1];
     char rec_md5[MD5_STR_LEN + 1];
     static int frame_count = 0;
+    unsigned char buffer[640*480*2];
     printf ("Connecting to hello world server…\n");
     void *context = zmq_ctx_new ();
     void *requester = zmq_socket (context, ZMQ_REQ);
-    zmq_connect (requester, "tcp://localhost:5555");
-
-    unsigned char buffer[640*480*2];
+    zmq_connect (requester, "tcp://10.10.41.195:5555");
 
 #define WRITE_FILE 0
 #if  WRITE_FILE
@@ -44,16 +44,19 @@ const char *filename = "rec_ir.raw";
     time2 = time1;
     double duration; 
 #endif
+
     while(1)
     {
         DEBUG ("Sending Hello to server ask for raw data \n");
         zmq_send (requester, "Hello", 5, 0);
         zmq_recv (requester, buffer, 640*480*2, 0);
         DEBUG ("Received raw data from server\n");
+
 #if  WRITE_FILE
         fwrite(buffer,1,640*480*2,fp);
         DEBUG ("Write raw data to rec_ir.raw file\n");
 #endif
+
         zmq_send (requester, "md5sum", 6, 0);
         DEBUG ("Send md5sun request\n");
         zmq_recv (requester, rec_md5, sizeof(rec_md5), 0);
@@ -67,6 +70,7 @@ const char *filename = "rec_ir.raw";
             DEBUG ("recive file md5sun check fialt\n");	
             break;
         }
+
 #if COUNT_FRAME_RATE
         time2 = clock();
         duration = (double)(time2-time1)/CLOCKS_PER_SEC; 
