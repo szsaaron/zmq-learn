@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include "md5.h"
 #include <time.h>
-#include <OrbStreamNtp.h>
+#include "OrbStreamNtp.h"
 
 //#define __DEBUG
 #ifdef __DEBUG
@@ -14,16 +14,29 @@
 #define DEBUG(format, ...)
 #endif
 
+
+#define COUNT_FRAME_RATE 1
+#if COUNT_FRAME_RATE
+static double getcurrenttime()
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    return ts.tv_sec + ((double)ts.tv_nsec)/1e9;
+}
+double duration,time1,time2;
+#endif
+
 int main (void)
 {
     char md5_str[MD5_STR_LEN + 1];
-    char rec_md5[MD5_STR_LEN + 1];
+//    char rec_md5[MD5_STR_LEN + 1];
     static int frame_count = 0;
     unsigned char buffer[640*480*2];
     printf ("Connecting to hello world server…\n");
     void *context = zmq_ctx_new ();
     void *requester = zmq_socket (context, ZMQ_REQ);
     zmq_connect (requester, "tcp://10.10.41.195:5555");
+    printf ("Connected to server\n");
 
 #define WRITE_FILE 0
 #if  WRITE_FILE
@@ -37,47 +50,48 @@ const char *filename = "rec_ir.raw";
     }
 #endif
 
-#define COUNT_FRAME_RATE 1
-#if COUNT_FRAME_RATE 
-    clock_t  time1,time2;
-    time1 = clock();
-    time2 = time1;
-    double duration; 
+#if COUNT_FRAME_RATE
+        time1 = getcurrenttime();
+        time2 = getcurrenttime();
 #endif
 
     while(1)
     {
+        zmq_send (requester, "Start", 5, 0);
         DEBUG ("Sending Hello to server ask for raw data \n");
-        zmq_send (requester, "Hello", 5, 0);
-        zmq_recv (requester, buffer, 640*480*2, 0);
+	
+	ROB_STREAM_NTP rframe;
+	ROB_STREAM_NTP *pframe = &rframe;
+
+        zmq_recv (requester, (unsigned char*)pframe, sizeof(rframe), 0);
         DEBUG ("Received raw data from server\n");
+
+	memcpy(buffer,pframe->frame_data,sizeof(buffer));
+	printf ("timestamp = %d \n",pframe->frame_info.timestamp);
+	printf ("stream_type = %d \n",pframe->frame_info.stream_type);
+	Compute_string_md5(buffer, sizeof(buffer), md5_str);
+//	printf ("md5_str: = %s \n",md5_str);
+	if(strcmp(md5_str,pframe->md5_str) == 0){
+            DEBUG ("recive file md5sun check pass\n");
+            frame_count++;
+        }else{
+            DEBUG ("recive file md5sun check fialt\n");
+            break;
+        }
 
 #if  WRITE_FILE
         fwrite(buffer,1,640*480*2,fp);
         DEBUG ("Write raw data to rec_ir.raw file\n");
 #endif
 
-        zmq_send (requester, "md5sum", 6, 0);
-        DEBUG ("Send md5sun request\n");
-        zmq_recv (requester, rec_md5, sizeof(rec_md5), 0);
-        DEBUG ("Received md5sum :%s\n",rec_md5);
-        Compute_string_md5(buffer, 640*480*2, md5_str);
-        if(strcmp(md5_str,rec_md5) == 0){
-            DEBUG ("recive file md5sun check pass\n");
-	        frame_count++;	
-            
-        }else{
-            DEBUG ("recive file md5sun check fialt\n");	
-            break;
-        }
 
 #if COUNT_FRAME_RATE
-        time2 = clock();
-        duration = (double)(time2-time1)/CLOCKS_PER_SEC; 
+        time2 =  getcurrenttime();
+        duration = (double)(time2-time1); 
         //printf( "%f seconds \n", duration);  
         if(duration >= 1){
             time1 = time2;
-            printf("####################################################read frameRate:%d \n", frame_count);
+            printf("####################################################read frameRate:%.2f \n", (double)frame_count/duration);
             frame_count = 0;	    
         }
 #endif
