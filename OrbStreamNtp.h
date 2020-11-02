@@ -22,6 +22,10 @@ typedef struct
 
 }ROB_STREAM_NTP;
 
+void *ob_ntp_init(const char *netinfo);
+void ob_ntp_close();
+char ob_ntp_pull(void* req,ROB_STREAM_NTP* frame);
+
 #ifdef __cplusplus
 }
 #endif

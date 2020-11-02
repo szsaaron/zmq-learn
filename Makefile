@@ -6,7 +6,7 @@ CFLAGS = -g
 LIBS = -lzmq -lczmq 
 LIBS_DIR = -L/usr/lib/x86_64-linux-gnu
 HEADERFILE_DIR = -I/usr/include
-CLIENT_SRC = client.c md5.c
+CLIENT_SRC = client.c OrbStreamNtp.c md5.c
 
 #all:  $(OBJS)
 all:
