@@ -93,7 +93,7 @@ char ob_ntp_pull(void* req,ROB_STREAM_NTP* frame)
         //printf( "%f seconds \n", duration);
         if(duration >= 1){
             time1 = time2;
-            printf("####FPS#### depth:%.2f ir:%.2f \n", (double)depth_frame_count/duration, (double)ir_frame_count/duration);
+            printf("    FPS     depth:%.2f ir:%.2f \n", (double)depth_frame_count/duration, (double)ir_frame_count/duration);
             depth_frame_count = 0;
             ir_frame_count = 0;
         }
