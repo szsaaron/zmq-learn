@@ -78,10 +78,10 @@ char ob_ntp_pull(void* req,ROB_STREAM_NTP* frame)
 #if COUNT_FRAME_RATE
 	switch(frame->frame_info.stream_type)
         {
-        	case 1:
+        	case 0:
              		depth_frame_count++;
                 	break;
-             	case 2:
+             	case 1:
                    	ir_frame_count++;
                   	break;
             	default:

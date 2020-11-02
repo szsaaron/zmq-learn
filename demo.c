@@ -36,11 +36,11 @@ const char *filename = "rec_ir.raw";
 	if(ob_ntp_pull(req,pframe) == 0){
         	switch(pframe->frame_info.stream_type)
 		{
-			case 1:
-                        	//depth_frame_count++;
+			case 0:
+                        	//printf("get depth stream \n");
                         	break;
-                	case 2:
-                        	//ir_frame_count++;
+                	case 1:
+                        	//printf("get ir stream \n");
                         	break;
                 	default:
                         	printf("Unxpected stream\n");
