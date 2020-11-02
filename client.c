@@ -7,7 +7,7 @@
 #include <time.h>
 #include "OrbStreamNtp.h"
 
-//#define __DEBUG
+#define __DEBUG
 #ifdef __DEBUG
 #define DEBUG(format, ...) printf (format, ##__VA_ARGS__)
 #else
@@ -24,6 +24,41 @@ static double getcurrenttime()
     return ts.tv_sec + ((double)ts.tv_nsec)/1e9;
 }
 double duration,time1,time2;
+#endif
+
+#if 0
+
+void context = NULL;
+void requester = NULL;
+void* ob_ntp_init(const char *netinfo)
+{
+    	printf ("Connecting to hello world server…\n");
+    	context = zmq_ctx_new ();
+    	requester = zmq_socket (context, ZMQ_REQ);
+    	zmq_connect (requester, "tcp://10.10.41.195:5555");
+    	context = context;
+    	printf ("Connected to server\n");
+	return requester;
+}
+
+void ob_ntp_close()
+{
+	zmq_close (requester);
+    	zmq_ctx_destroy (context);
+	context = NULL;
+	requester = NULL;
+}
+
+ROB_STREAM_NTP rframe;
+ROB_STREAM_NTP* pframe
+void orb_ntp_pull(void* req, ROB_STREAM_NTP* frame)
+{
+	zmq_send (req, "Start", 5, 0);
+        DEBUG ("Sending Hello to server ask for raw data \n");
+	zmq_recv (requester, (unsigned char*)frame, sizeof(rframe), 0);
+        DEBUG ("Received raw data from server\n");
+}
+
 #endif
 
 int main (void)
@@ -67,8 +102,8 @@ const char *filename = "rec_ir.raw";
         DEBUG ("Received raw data from server\n");
 
 	memcpy(buffer,pframe->frame_data,sizeof(buffer));
-	printf ("timestamp = %d \n",pframe->frame_info.timestamp);
-	printf ("stream_type = %d \n",pframe->frame_info.stream_type);
+//	printf ("timestamp = %d \n",pframe->frame_info.timestamp);
+//	printf ("stream_type = %d \n",pframe->frame_info.stream_type);
 	Compute_string_md5(buffer, sizeof(buffer), md5_str);
 //	printf ("md5_str: = %s \n",md5_str);
 	if(strcmp(md5_str,pframe->md5_str) == 0){
