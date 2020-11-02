@@ -14,20 +14,6 @@
 #define DEBUG(format, ...)
 #endif
 
-
-#define COUNT_FRAME_RATE 0
-#if COUNT_FRAME_RATE
-static int ir_frame_count,depth_frame_count;
-static double getcurrenttime()
-{
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    return ts.tv_sec + ((double)ts.tv_nsec)/1e9;
-}
-double duration,time1,time2;
-#endif
-
-
 int main (void)
 {
     void *req = ob_ntp_init ("tcp://10.10.41.195:5555");
@@ -44,12 +30,6 @@ const char *filename = "rec_ir.raw";
     }
 #endif
 
-#if COUNT_FRAME_RATE
-    	ir_frame_count = 0;
-    	depth_frame_count = 0;
-        time1 = getcurrenttime();
-        time2 = getcurrenttime();
-#endif
 
     while(1)
     {
@@ -79,18 +59,6 @@ const char *filename = "rec_ir.raw";
         DEBUG ("Write raw data to rec_ir.raw file\n");
 #endif
 
-
-#if COUNT_FRAME_RATE
-        time2 =  getcurrenttime();
-        duration = (double)(time2-time1); 
-        //printf( "%f seconds \n", duration);  
-        if(duration >= 1){
-            time1 = time2;
-            printf("####FPS#### depth:%.2f ir:%.2f \n", (double)depth_frame_count/duration, (double)ir_frame_count/duration);
-            depth_frame_count = 0;	    
-            ir_frame_count = 0;	    
-        }
-#endif
     }
 
     ob_ntp_close();
