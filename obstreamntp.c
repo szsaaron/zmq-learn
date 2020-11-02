@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <time.h>
 #include "md5.h"
-#include "OrbStreamNtp.h"
+#include "obstreamntp.h"
 
 //#define __DEBUG
 #ifdef __DEBUG
