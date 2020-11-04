@@ -56,25 +56,28 @@ void ob_ntp_close()
 char ob_ntp_pull(void* req,ROB_STREAM_NTP* frame)
 {
 	char md5_str[MD5_STR_LEN + 1];
-	unsigned char buffer[640*480*2];
 	char ret = -1;
         zmq_send (req, "Start", 5, 0);
         DEBUG ("Sending Hello to server ask for raw data \n");
         zmq_recv (requester, (unsigned char*)frame, sizeof(ROB_STREAM_NTP), 0);
         DEBUG ("Received raw data from server\n");
-	memcpy(buffer,frame->frame_data,sizeof(buffer));
-//      printf ("ir_timestamp = %d \n",frame->frame_info.ir_timestamp);
-//      printf ("depth_timestamp = %d \n",frame->frame_info.depth_timestamp);
-//      printf ("stream_type = %d \n",frame->frame_info.stream_type);
-        Compute_string_md5(buffer, sizeof(buffer), md5_str);
-//      printf ("md5_str: = %s \n",md5_str);
-        if(strcmp(md5_str,frame->md5_str) == 0){
-            	DEBUG ("recive file md5sun check pass\n");
+	if(frame->frame_info.checksum == 1)
+	{
+//      	printf ("ir_timestamp = %d \n",frame->frame_info.ir_timestamp);
+//      	printf ("depth_timestamp = %d \n",frame->frame_info.depth_timestamp);
+//      	printf ("stream_type = %d \n",frame->frame_info.stream_type);
+        	Compute_string_md5(frame->frame_data, sizeof(frame->frame_data), md5_str);
+//      	printf ("md5_str: = %s \n",md5_str);
+        	if(strcmp(md5_str,frame->md5_str) == 0){
+            		DEBUG ("recive file md5sun check pass\n");
+			ret = 0;
+        	}else{
+			ret = -1;
+            		DEBUG ("recive file md5sun check fialt\n");
+        	}
+	}else{
 		ret = 0;
-        }else{
-		ret = -1;
-            	DEBUG ("recive file md5sun check fialt\n");
-        }
+	}
 
 #if COUNT_FRAME_RATE
 	switch(frame->frame_info.stream_type)

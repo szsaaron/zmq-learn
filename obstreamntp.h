@@ -8,6 +8,7 @@ extern "C"
 
 typedef struct
 {
+        unsigned char checksum;
         unsigned char stream_type;
         unsigned int ir_timestamp;
         unsigned int depth_timestamp;
