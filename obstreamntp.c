@@ -63,7 +63,8 @@ char ob_ntp_pull(void* req,ROB_STREAM_NTP* frame)
         zmq_recv (requester, (unsigned char*)frame, sizeof(ROB_STREAM_NTP), 0);
         DEBUG ("Received raw data from server\n");
 	memcpy(buffer,frame->frame_data,sizeof(buffer));
-//      printf ("timestamp = %d \n",frame->frame_info.timestamp);
+//      printf ("ir_timestamp = %d \n",frame->frame_info.ir_timestamp);
+//      printf ("depth_timestamp = %d \n",frame->frame_info.depth_timestamp);
 //      printf ("stream_type = %d \n",frame->frame_info.stream_type);
         Compute_string_md5(buffer, sizeof(buffer), md5_str);
 //      printf ("md5_str: = %s \n",md5_str);

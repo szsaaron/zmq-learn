@@ -3,7 +3,7 @@ CLIENT_APP = client.out
 
 CC = gcc
 CFLAGS = -g 
-LIBS = -lzmq -lczmq 
+LIBS = -lzmq  
 LIBS_DIR = -L/usr/lib/x86_64-linux-gnu
 HEADERFILE_DIR = -I/usr/include
 CLIENT_SRC = demo.c obstreamntp.c md5.c

@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include "obstreamntp.h"
 
-#define __DEBUG
+//#define __DEBUG
 #ifdef __DEBUG
 #define DEBUG(format, ...) printf (format, ##__VA_ARGS__)
 #else
@@ -12,7 +12,8 @@
 
 int main (void)
 {
-    void *req = ob_ntp_init ("tcp://10.10.41.195:5555");
+    //void *req = ob_ntp_init ("tcp://10.10.41.105:6666");
+    void *req = ob_ntp_init ("tcp://10.10.41.195:6666");
 
 #define WRITE_FILE 0
 #if  WRITE_FILE

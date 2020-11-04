@@ -9,7 +9,8 @@ extern "C"
 typedef struct
 {
         unsigned char stream_type;
-        unsigned int timestamp;
+        unsigned int ir_timestamp;
+        unsigned int depth_timestamp;
 }ORB_FRAME_INFO;
 
 typedef struct
